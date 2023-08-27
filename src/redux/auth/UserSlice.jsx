@@ -2,12 +2,23 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { hostName } from "../../config";
 
+const headers = {
+  accept: "*/*",
+  "Content-Type": "application/json-patch+json",
+};
+
 export const loginWithPhoneNo = createAsyncThunk(
   "auth/loginWithPhoneNo",
   async (phoneNo) => {
-    const request = await axios.post(`${hostName}api/auth/login`, phoneNo);
-    const response = await request.data.data;
-    localStorage.setItem("user", JSON.stringify(response));
+    const request = await axios.post(
+      `${hostName}api/Auth/loginwithphone`,
+      `"${phoneNo}"`,
+      {
+        headers: headers,
+      }
+    );
+    const response = await request.data;
+    localStorage.setItem("token", response);
     return response;
   }
 );

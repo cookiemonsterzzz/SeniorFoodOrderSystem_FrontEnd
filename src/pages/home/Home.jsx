@@ -22,7 +22,7 @@ const Home = () => {
     dispatch(loginWithPhoneNo(phoneNo)).then((result) => {
       if (result.payload) {
         setPhoneNo("");
-        navigate("/");
+        navigate("/menu");
       }
     });
   };

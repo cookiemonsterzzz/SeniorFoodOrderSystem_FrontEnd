@@ -4,15 +4,12 @@ import Home from "./pages/home/Home";
 import { Menu } from "./pages/menu/Menu";
 
 function getUser() {
-  let user = localStorage.getItem("user");
+  let token = localStorage.getItem("token");
+  return token ? parseJwt(token) : null;
+}
 
-  if (user) {
-    user = JSON.parse(user);
-  } else {
-    user = null;
-  }
-
-  return user;
+function parseJwt(token) {
+  return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
 }
 
 const App = () => {
@@ -23,7 +20,10 @@ const App = () => {
       <Router>
         <Routes>
           {user ? (
-            <Route path="/" element={<Menu />} />
+            <>
+              <Route path="/" element={<Menu />} />
+              <Route path="/menu" element={<Menu />} />
+            </>
           ) : (
             <Route path="/" element={<Home />} />
           )}
