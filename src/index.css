@@ -43,3 +43,11 @@ body {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
+
+.navbar {
+  background-color: #800020 !important;
+}
+
+.navbar .navbar-brand {
+  color: #f9f4ea !important;
+}

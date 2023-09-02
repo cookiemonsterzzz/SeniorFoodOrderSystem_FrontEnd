@@ -1,11 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { hostName } from "../../config";
-
-const headers = {
-  accept: "*/*",
-  "Content-Type": "application/json-patch+json",
-};
+import { apiHeaders, hostName } from "../../config";
 
 export const loginWithPhoneNo = createAsyncThunk(
   "auth/loginWithPhoneNo",
@@ -14,7 +9,7 @@ export const loginWithPhoneNo = createAsyncThunk(
       `${hostName}api/Auth/loginwithphone`,
       `"${phoneNo}"`,
       {
-        headers: headers,
+        headers: apiHeaders,
       }
     );
     const response = await request.data;
@@ -45,7 +40,6 @@ const userSlice = createSlice({
       .addCase(loginWithPhoneNo.rejected, (state, action) => {
         state.loading = false;
         state.user = null;
-        console.log(action.error.message);
         state.error = "Couldn't proceed. Please Retry.";
       });
   },

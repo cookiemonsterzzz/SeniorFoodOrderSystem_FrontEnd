@@ -23,6 +23,7 @@ const Home = () => {
       if (result.payload) {
         setPhoneNo("");
         navigate("/menu");
+        window.dispatchEvent(new Event("userToken"));
       }
     });
   };
@@ -52,7 +53,7 @@ const Home = () => {
           />
         </div>
         <button type="submit" className="btn btn-danger btn-lg mt-2 w-100">
-          {loading ? "Loading..." : "Proceed"}
+          {loading ? "Loading..." : "Login"}
         </button>
       </form>
       {error && (
