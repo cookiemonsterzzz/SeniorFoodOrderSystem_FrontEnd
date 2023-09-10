@@ -5,14 +5,18 @@ import { useSelector } from "react-redux";
 
 const Menu = () => {
   const [menu, setMenu] = useState(null);
+  const [selectedFood, setSelectedFood] = useState(null);
   const dispatch = useDispatch();
 
   const { loading, error } = useSelector((state) => state.menu);
 
+  const handleModal = (food) => {
+    setSelectedFood(food);
+  };
+
   React.useEffect(() => {
     dispatch(getMenuWithPreferences()).then((result) => {
       if (result.payload) {
-        console.log(result.payload);
         setMenu(result.payload);
       }
     });
@@ -39,30 +43,102 @@ const Menu = () => {
           <span className="visually-hidden">Loading...</span>
         </div>
       ) : (
-        <div className="container-fluid text-center menu">
-          {menu &&
-            menu.map((stall) => (
-              <>
-                <div className="row row-cols-1">
-                  <div className="col">{stall.stallName}</div>
-                  <div className="col">{numberStars(stall.rating)}</div>
-                </div>
-                <div className="row row-cols-2">
-                  {stall.foods.map((food) => (
-                    <>
-                      <div className="salad-card">
+        <>
+          <div className="container-fluid text-center menu">
+            {menu &&
+              menu.map((stall) => (
+                <>
+                  <div className="row row-cols-2">
+                    <div className="col">
+                      <h2>{stall.stallName}</h2>
+                    </div>
+                    <div className="col">{numberStars(stall.rating)}</div>
+                  </div>
+                  <div className="row row-cols-2">
+                    {stall.foods.map((food) => (
+                      <div
+                        key={food.foodName}
+                        className="salad-card"
+                        data-bs-toggle="modal"
+                        data-bs-target="#foodModal"
+                        onClick={() => handleModal(food)}
+                      >
                         <img src={food.image} alt={food.foodName} />
                         <div className="salad-detail-card">
                           <h3>{food.foodName}</h3>
                           <p>${food.price}</p>
                         </div>
                       </div>
-                    </>
-                  ))}
+                    ))}
+                  </div>
+                </>
+              ))}
+          </div>
+
+          <div id="foodModal" className="modal">
+            <div className="modal-dialog modal-fullscreen">
+              {selectedFood && (
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">{selectedFood.foodName}</h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    <img
+                      className="mb-2"
+                      src={selectedFood.image}
+                      alt={selectedFood.foodName}
+                    />
+                    <p className="text-end mb-0">
+                      Price: ${selectedFood.price}
+                    </p>
+                    {selectedFood.foodCustomization.map((x) => (
+                      <div className="form-check text-end">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value=""
+                          id={"check" + x.name}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor={"check" + x.name}
+                        >
+                          {x.name + " $" + x.price}
+                        </label>
+                      </div>
+                    ))}
+                    <p className="text-end">
+                      {"Total: $" + selectedFood.price}
+                    </p>
+                    <div className="form-floating">
+                      <textarea
+                        className="form-control"
+                        placeholder="Remarks"
+                        id="floatingTextarea"
+                      ></textarea>
+                      <label htmlFor="floatingTextarea">Remarks</label>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-danger w-100"
+                      data-bs-dismiss="modal"
+                    >
+                      Pay
+                    </button>
+                  </div>
                 </div>
-              </>
-            ))}
-        </div>
+              )}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
