@@ -2,17 +2,78 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { getMenuWithPreferences } from "../../redux/menu/MenuSlice";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../../component/Navbar";
 
 const Menu = () => {
   const [menu, setMenu] = useState(null);
   const [selectedFood, setSelectedFood] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [addOn, setAddOn] = useState([]);
+  const [total, setTotal] = useState(0);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { loading, error } = useSelector((state) => state.menu);
 
   const handleModal = (food) => {
     setSelectedFood(food);
+    if (food) {
+      setTotal(food.price);
+      setQuantity(1);
+    } else {
+      setTotal(0);
+      setQuantity(0);
+    }
   };
+
+  const handleQty = (qty) => {
+    if (qty <= 9 && qty > 0) {
+      setQuantity(qty);
+    }
+  };
+
+  const handleCustomization = (checked, addOnAmount) => {
+    if (checked) {
+      setAddOn([...addOn, addOnAmount]);
+    } else {
+      var tempArr = addOn;
+      const index = tempArr.findIndex((item) => item === addOnAmount);
+      if (index !== -1) {
+        tempArr.splice(index, 1);
+        setAddOn(tempArr);
+      }
+    }
+  };
+
+  const handlePlusClick = () => {
+    if (quantity < 9) {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const handleMinusClick = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const calculateTotal = () => {
+    const basePrice = selectedFood.price;
+    const addonPrice = addOn
+      ? addOn.reduce((acc, addon) => {
+          return acc + addon;
+        }, 0)
+      : 0;
+    var newTotal = (basePrice + addonPrice) * quantity;
+    setTotal(newTotal);
+  };
+
+  React.useEffect(() => {
+    if (selectedFood) {
+      calculateTotal();
+    }
+  }, [selectedFood, quantity, addOn]);
 
   React.useEffect(() => {
     dispatch(getMenuWithPreferences()).then((result) => {
@@ -24,16 +85,7 @@ const Menu = () => {
 
   return (
     <div className="container text-center">
-      <nav className="navbar fixed-top">
-        <div className="container-fluid">
-          <a className="navbar-brand" href="#">
-            Menu
-          </a>
-          <button className="btn btn-sm btn-outline-light" type="submit">
-            Log Out
-          </button>
-        </div>
-      </nav>
+      <Navbar title={"Menu"}></Navbar>
       {error ? (
         <div>
           <div className="alert alert-danger mt-1">{error}</div>
@@ -86,6 +138,9 @@ const Menu = () => {
                       className="btn-close"
                       data-bs-dismiss="modal"
                       aria-label="Close"
+                      onClick={() => {
+                        handleModal(null);
+                      }}
                     ></button>
                   </div>
                   <div className="modal-body">
@@ -94,9 +149,35 @@ const Menu = () => {
                       src={selectedFood.image}
                       alt={selectedFood.foodName}
                     />
-                    <p className="text-end mb-0">
-                      Price: ${selectedFood.price}
-                    </p>
+                    <div className="input-group text-end">
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        type="button"
+                        onClick={handleMinusClick}
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        className="form-control text-center"
+                        placeholder=""
+                        value={quantity}
+                        min="1"
+                        max="9"
+                        onChange={(e) => {
+                          handleQty(e.target.value);
+                        }}
+                      />
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        type="button"
+                        onClick={handlePlusClick}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <p className="text-end">Price: ${selectedFood.price}</p>
+
                     {selectedFood.foodCustomization.map((x) => (
                       <div className="form-check text-end">
                         <input
@@ -104,6 +185,9 @@ const Menu = () => {
                           type="checkbox"
                           value=""
                           id={"check" + x.name}
+                          onChange={(e) =>
+                            handleCustomization(e.target.checked, x.price)
+                          }
                         />
                         <label
                           className="form-check-label"
@@ -113,9 +197,6 @@ const Menu = () => {
                         </label>
                       </div>
                     ))}
-                    <p className="text-end">
-                      {"Total: $" + selectedFood.price}
-                    </p>
                     <div className="form-floating">
                       <textarea
                         className="form-control"
@@ -130,8 +211,9 @@ const Menu = () => {
                       type="button"
                       className="btn btn-danger w-100"
                       data-bs-dismiss="modal"
+                      onClick={() => navigate("/payment", { state: total })}
                     >
-                      Pay
+                      {"Pay $" + total}
                     </button>
                   </div>
                 </div>

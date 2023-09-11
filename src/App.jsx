@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Home from "./pages/home/Home";
 import Menu from "./pages/menu/Menu";
+import Payment from "./pages/payment/Payment";
 
 function getUser() {
   let token = localStorage.getItem("token");
@@ -41,6 +42,7 @@ const App = () => {
             <>
               <Route path="/" element={<Menu />} />
               <Route path="/menu" element={<Menu />} />
+              <Route path="/payment" element={<Payment />} />
             </>
           ) : (
             <>

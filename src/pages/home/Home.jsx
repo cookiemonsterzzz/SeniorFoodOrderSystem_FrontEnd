@@ -40,7 +40,7 @@ const Home = () => {
       </div>
       <form onSubmit={handleSubmit}>
         <div className="input-group input-group-lg">
-          <p className="input-group-text mt-0 mb-0">+65</p>
+          <p className="input-group-text mt-0">+65</p>
           <input
             maxLength={8}
             type="text"

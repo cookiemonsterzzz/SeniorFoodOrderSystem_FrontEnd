@@ -98,8 +98,23 @@ h3 {
 
 p {
   text-align: center;
+  margin-bottom: 0 !important;
 }
 
 .menu {
   margin-top: 100px;
+}
+
+.food-detail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-check-input:checked {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.payable-amount {
+  font-size: 48px !important;
 }
