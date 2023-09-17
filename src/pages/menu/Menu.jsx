@@ -58,6 +58,12 @@ const Menu = () => {
     }
   };
 
+  const handlePayment = (total) => {
+    //create order
+    var orderID = "99912";
+    navigate("/payment", { state: orderID });
+  };
+
   const calculateTotal = () => {
     const basePrice = selectedFood.price;
     const addonPrice = addOn
@@ -211,7 +217,7 @@ const Menu = () => {
                       type="button"
                       className="btn btn-danger w-100"
                       data-bs-dismiss="modal"
-                      onClick={() => navigate("/payment", { state: total })}
+                      onClick={() => handlePayment(total)}
                     >
                       {"Pay $" + total}
                     </button>
