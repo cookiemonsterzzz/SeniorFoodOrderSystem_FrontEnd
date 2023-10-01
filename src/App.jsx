@@ -30,26 +30,34 @@ function validateTokenExpiration(exp) {
 const App = () => {
   const [user, setUser] = useState(getUser());
 
-  window.addEventListener("userToken", () => {
+  const retriveCurrentUser = () => {
     setUser(getUser());
-  });
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("userToken", retriveCurrentUser);
+
+    return () => {
+      window.removeEventListener("userToken", retriveCurrentUser);
+    };
+  }, []);
 
   return (
     <div className="wrapper center">
       <Router>
         <Routes>
-          {user ? (
-            <>
-              <Route path="/" element={<Menu />} />
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/payment" element={<Payment />} />
-            </>
-          ) : (
-            <>
-              <Route path="/" element={<Home />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </>
-          )}
+          {/* {user ? (
+            <> */}
+          <Route path="/" element={<Menu />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/payment" element={<Payment />} />
+          {/* </> */}
+          {/* // ) : (
+          //   <>
+          //     <Route path="/" element={<Home />} />
+          //     <Route path="*" element={<Navigate to="/" />} />
+          //   </>
+          // )} */}
         </Routes>
       </Router>
     </div>

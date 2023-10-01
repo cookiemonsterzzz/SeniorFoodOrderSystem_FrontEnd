@@ -34,10 +34,11 @@ const Menu = () => {
   };
 
   const handleCustomization = (checked, addOnAmount) => {
+    addOnAmount = parseFloat(addOnAmount.toFixed(2));
     if (checked) {
       setAddOn([...addOn, addOnAmount]);
     } else {
-      var tempArr = addOn;
+      var tempArr = [...addOn];
       const index = tempArr.findIndex((item) => item === addOnAmount);
       if (index !== -1) {
         tempArr.splice(index, 1);
@@ -71,7 +72,7 @@ const Menu = () => {
           return acc + addon;
         }, 0)
       : 0;
-    var newTotal = (basePrice + addonPrice) * quantity;
+    var newTotal = ((basePrice + addonPrice) * quantity).toFixed(2);
     setTotal(newTotal);
   };
 
