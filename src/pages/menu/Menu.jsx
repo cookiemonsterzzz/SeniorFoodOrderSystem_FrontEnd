@@ -4,6 +4,7 @@ import { getMenuWithPreferences } from "../../redux/menu/MenuSlice";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../component/Navbar";
+import { upsertOrder } from "../../redux/order/OrderUpsertSlice";
 
 const Menu = () => {
   const [menu, setMenu] = useState(null);
@@ -33,13 +34,15 @@ const Menu = () => {
     }
   };
 
-  const handleCustomization = (checked, addOnAmount) => {
+  const handleCustomization = (checked, addOnItem, addOnAmount) => {
     addOnAmount = parseFloat(addOnAmount.toFixed(2));
     if (checked) {
-      setAddOn([...addOn, addOnAmount]);
+      setAddOn([...addOn, { key: addOnItem, value: addOnAmount }]);
     } else {
       var tempArr = [...addOn];
-      const index = tempArr.findIndex((item) => item === addOnAmount);
+      const index = tempArr.findIndex(
+        (item) => item.key === addOnItem && item.value === addOnAmount
+      );
       if (index !== -1) {
         tempArr.splice(index, 1);
         setAddOn(tempArr);
@@ -59,17 +62,30 @@ const Menu = () => {
     }
   };
 
-  const handlePayment = (total) => {
+  const handlePayment = () => {
     //create order
-    var orderID = "99912";
-    navigate("/payment", { state: orderID });
+    let orderDto = {
+      FoodName: selectedFood.foodName,
+      FoodCustomization: addOn
+        .map((item) => `${item.key}: ${item.value}`)
+        .join(", "),
+      FoodPrice: total,
+      Quantity: quantity,
+    };
+
+    dispatch(upsertOrder(orderDto)).then((result) => {
+      if (result.payload) {
+        let orderName = result.payload.orderName;
+        navigate("/payment", { state: orderName });
+      }
+    });
   };
 
   const calculateTotal = () => {
     const basePrice = selectedFood.price;
     const addonPrice = addOn
       ? addOn.reduce((acc, addon) => {
-          return acc + addon;
+          return acc + addon.value;
         }, 0)
       : 0;
     var newTotal = ((basePrice + addonPrice) * quantity).toFixed(2);
@@ -193,7 +209,11 @@ const Menu = () => {
                           value=""
                           id={"check" + x.name}
                           onChange={(e) =>
-                            handleCustomization(e.target.checked, x.price)
+                            handleCustomization(
+                              e.target.checked,
+                              x.name,
+                              x.price
+                            )
                           }
                         />
                         <label
@@ -218,7 +238,7 @@ const Menu = () => {
                       type="button"
                       className="btn btn-danger w-100"
                       data-bs-dismiss="modal"
-                      onClick={() => handlePayment(total)}
+                      onClick={() => handlePayment()}
                     >
                       {"Pay $" + total}
                     </button>

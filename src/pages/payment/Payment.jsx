@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../../component/Navbar";
 import { useDispatch } from "react-redux";
-import { getOrderById } from "../../redux/order/OrderSlice";
+import { getOrderByName } from "../../redux/order/OrderSlice";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -19,7 +19,7 @@ const Payment = ({ orderId }) => {
     setPaymentMode(value);
   };
 
-  const handlePay = (event) => {
+  const handlePay = () => {
     if (!onlinePaymentMode) {
       alert("Please select one online payment mode.");
       return;
@@ -33,33 +33,26 @@ const Payment = ({ orderId }) => {
   };
 
   React.useEffect(() => {
-    var newOrderId = orderId || location;
-    dispatch(getOrderById(newOrderId)).then((result) => {
+    var paymentOrderId = orderId || location.state;
+    dispatch(getOrderByName(paymentOrderId)).then((result) => {
       if (result.payload) {
         setOrderDetail(result.payload);
       }
     });
 
-    window.addEventListener("paymentMade", showPaymentSuccess);
+    //window.dispatchEvent(new Event('paymentMade_Order_20231001155027'));
+    window.addEventListener(
+      "paymentMade_" + paymentOrderId,
+      showPaymentSuccess
+    );
 
     return () => {
-      window.removeEventListener("paymentMade", showPaymentSuccess);
+      window.removeEventListener(
+        "paymentMade_" + paymentOrderId,
+        showPaymentSuccess
+      );
     };
   }, []);
-
-  function debounce(func, wait) {
-    let timeout;
-
-    return function(...args) {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-
-      timeout = setTimeout(() => {
-        func(...args);
-      }, wait);
-    };
-  }
 
   return (
     <div className="container text-center">
@@ -76,9 +69,9 @@ const Payment = ({ orderId }) => {
         <div className="container-fluid text-center menu">
           {orderDetail && (
             <>
-              <h1>{"Order ID: " + orderDetail.OrderId}</h1>
+              <h1>{"Order ID: " + orderDetail.orderName}</h1>
               <h1>Total Payable</h1>
-              <h2 className="payable-amount">{"$" + orderDetail.Total}</h2>
+              <h2 className="payable-amount">{"$" + orderDetail.foodPrice}</h2>
               <div className="btn-group" role="group">
                 <input
                   type="radio"

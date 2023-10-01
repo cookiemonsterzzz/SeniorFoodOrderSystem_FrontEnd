@@ -46,18 +46,18 @@ const App = () => {
     <div className="wrapper center">
       <Router>
         <Routes>
-          {/* {user ? (
-            <> */}
-          <Route path="/" element={<Menu />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/payment" element={<Payment />} />
-          {/* </> */}
-          {/* // ) : (
-          //   <>
-          //     <Route path="/" element={<Home />} />
-          //     <Route path="*" element={<Navigate to="/" />} />
-          //   </>
-          // )} */}
+          {user ? (
+            <>
+              <Route path="/" element={<Menu />} />
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/payment" element={<Payment />} />
+            </>
+          ) : (
+            <>
+              <Route path="/" element={<Home />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </>
+          )}
         </Routes>
       </Router>
     </div>

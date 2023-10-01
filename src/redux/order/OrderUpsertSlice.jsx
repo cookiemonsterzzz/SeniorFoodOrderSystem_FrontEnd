@@ -2,24 +2,29 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { apiHeaders, orderHostName } from "../../config";
 
-export const getOrderByName = createAsyncThunk(
-  "order/getOrderByID",
-  async (orderName) => {
+export const upsertOrder = createAsyncThunk(
+  "order/upsertOrder",
+  async (orderDto) => {
     let token = "Bearer " + localStorage.getItem("token");
-    const request = await axios.get(
-      `${orderHostName}api/order/getOrderByName?orderName=${orderName}`,
-      undefined,
+    const request = await axios.post(
+      `${orderHostName}api/order/upsertOrder`,
+      orderDto,
       {
         headers: { ...apiHeaders, Authorization: token },
       }
     );
     const response = await request.data;
+    // const response = await request.data;
+    // const response = {
+    //   OrderId: "99912",
+    //   Total: 10,
+    // };
     return response;
   }
 );
 
-const orderSlice = createSlice({
-  name: "order",
+const orderUpsertSlice = createSlice({
+  name: "orderUpsert",
   initialState: {
     loading: false,
     order: null,
@@ -27,17 +32,17 @@ const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getOrderByName.pending, (state) => {
+      .addCase(upsertOrder.pending, (state) => {
         state.loading = true;
         state.order = null;
         state.error = null;
       })
-      .addCase(getOrderByName.fulfilled, (state, action) => {
+      .addCase(upsertOrder.fulfilled, (state, action) => {
         state.loading = false;
         state.order = action.payload;
         state.error = null;
       })
-      .addCase(getOrderByName.rejected, (state, action) => {
+      .addCase(upsertOrder.rejected, (state, action) => {
         state.loading = false;
         state.order = null;
         state.error = "Couldn't proceed. Please Retry.";
@@ -45,4 +50,4 @@ const orderSlice = createSlice({
   },
 });
 
-export default orderSlice.reducer;
+export default orderUpsertSlice.reducer;
