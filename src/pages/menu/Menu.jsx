@@ -109,6 +109,10 @@ const Menu = () => {
     setTotal(newTotal);
   };
 
+  const goToOrderHistory = () => {
+    navigate("/order");
+  };
+
   React.useEffect(() => {
     if (selectedFood) {
       calculateTotal();
@@ -174,7 +178,13 @@ const Menu = () => {
           </div>
 
           <nav className="fixed-bottom p-2">
-            <button type="button" className="btn btn-danger w-100 btn-red">
+            <button
+              type="button"
+              className="btn btn-danger w-100 btn-red"
+              onClick={() => {
+                goToOrderHistory();
+              }}
+            >
               {"Order History"}
             </button>
           </nav>

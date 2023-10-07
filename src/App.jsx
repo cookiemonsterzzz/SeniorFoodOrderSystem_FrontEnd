@@ -8,6 +8,7 @@ import {
 import Home from "./pages/home/Home";
 import Menu from "./pages/menu/Menu";
 import Payment from "./pages/payment/Payment";
+import Order from "./pages/order/Order";
 
 function getUser() {
   let token = localStorage.getItem("token");
@@ -51,6 +52,7 @@ const App = () => {
               <Route path="/" element={<Menu />} />
               <Route path="/menu" element={<Menu />} />
               <Route path="/payment" element={<Payment />} />
+              <Route path="/order" element={<Order />} />
             </>
           ) : (
             <>

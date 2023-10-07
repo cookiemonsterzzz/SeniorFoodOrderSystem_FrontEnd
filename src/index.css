@@ -172,3 +172,7 @@ p {
 #btnBackToMenu {
   color: var(--red);
 }
+
+.badge {
+  font-size: 16px !important;
+}
