@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { apiHeaders, orderHostName } from "../../config";
+import { apiHeaders, paymentHostName } from "../../config";
 
-export const upsertOrder = createAsyncThunk(
-  "order/upsertOrder",
-  async (orderDto) => {
+export const upsertPayment = createAsyncThunk(
+  "payment/upsertPayment",
+  async (paymentDto) => {
     let token = "Bearer " + localStorage.getItem("token");
     const request = await axios.post(
-      `${orderHostName}api/Order/upsertOrder`,
-      orderDto,
+      `${paymentHostName}api/Payment/upsertPayment`,
+      paymentDto,
       {
         headers: { ...apiHeaders, Authorization: token },
       }
@@ -18,8 +18,8 @@ export const upsertOrder = createAsyncThunk(
   }
 );
 
-const orderUpsertSlice = createSlice({
-  name: "orderUpsert",
+const paymentUpsertSlice = createSlice({
+  name: "paymentUpsert",
   initialState: {
     loading: false,
     order: null,
@@ -27,17 +27,17 @@ const orderUpsertSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(upsertOrder.pending, (state) => {
+      .addCase(upsertPayment.pending, (state) => {
         state.loading = true;
         state.order = null;
         state.error = null;
       })
-      .addCase(upsertOrder.fulfilled, (state, action) => {
+      .addCase(upsertPayment.fulfilled, (state, action) => {
         state.loading = false;
         state.order = action.payload;
         state.error = null;
       })
-      .addCase(upsertOrder.rejected, (state, action) => {
+      .addCase(upsertPayment.rejected, (state, action) => {
         state.loading = false;
         state.order = null;
         state.error = "Couldn't proceed. Please Retry.";
@@ -45,4 +45,4 @@ const orderUpsertSlice = createSlice({
   },
 });
 
-export default orderUpsertSlice.reducer;
+export default paymentUpsertSlice.reducer;

@@ -3,6 +3,7 @@ import userReducer from "./auth/UserSlice";
 import menuReducer from "./menu/MenuSlice";
 import orderReducer from "./order/OrderSlice";
 import orderUpsertReducer from "./order/OrderUpsertSlice";
+import paymentUpsertReducer from "./payment/PaymentSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     menu: menuReducer,
     order: orderReducer,
     orderUpsert: orderUpsertReducer,
+    paymentUpsert: paymentUpsertReducer,
   },
 });
 

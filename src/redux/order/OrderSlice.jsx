@@ -2,13 +2,12 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { apiHeaders, orderHostName } from "../../config";
 
-export const getOrderByName = createAsyncThunk(
+export const getOrderByID = createAsyncThunk(
   "order/getOrderByID",
-  async (orderName) => {
+  async (orderId) => {
     let token = "Bearer " + localStorage.getItem("token");
     const request = await axios.get(
-      `${orderHostName}api/order/getOrderByName?orderName=${orderName}`,
-      undefined,
+      `${orderHostName}api/Order/getOrderById?orderId=${orderId}`,
       {
         headers: { ...apiHeaders, Authorization: token },
       }
@@ -27,17 +26,17 @@ const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getOrderByName.pending, (state) => {
+      .addCase(getOrderByID.pending, (state) => {
         state.loading = true;
         state.order = null;
         state.error = null;
       })
-      .addCase(getOrderByName.fulfilled, (state, action) => {
+      .addCase(getOrderByID.fulfilled, (state, action) => {
         state.loading = false;
         state.order = action.payload;
         state.error = null;
       })
-      .addCase(getOrderByName.rejected, (state, action) => {
+      .addCase(getOrderByID.rejected, (state, action) => {
         state.loading = false;
         state.order = null;
         state.error = "Couldn't proceed. Please Retry.";

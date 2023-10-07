@@ -9,6 +9,7 @@ import { upsertOrder } from "../../redux/order/OrderUpsertSlice";
 const Menu = () => {
   const [menu, setMenu] = useState(null);
   const [selectedFood, setSelectedFood] = useState(null);
+  const [selectedStallId, setSelectedStallId] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [addOn, setAddOn] = useState([]);
   const [total, setTotal] = useState(0);
@@ -17,8 +18,9 @@ const Menu = () => {
 
   const { loading, error } = useSelector((state) => state.menu);
 
-  const handleModal = (food) => {
+  const handleModal = (food, stallId) => {
     setSelectedFood(food);
+    setSelectedStallId(stallId);
     if (food) {
       setTotal(food.price);
       setQuantity(1);
@@ -64,21 +66,36 @@ const Menu = () => {
 
   const handlePayment = () => {
     //create order
+    if (!window.confirm("Confirm to order?")) {
+      return;
+    }
+
     let orderDto = {
       FoodName: selectedFood.foodName,
       FoodCustomization: addOn
         .map((item) => `${item.key}: ${item.value}`)
         .join(", "),
-      FoodPrice: total,
+      FoodPrice: selectedFood.price,
       Quantity: quantity,
+      Amount: parseFloat(total),
+      StallId: selectedStallId,
     };
 
-    dispatch(upsertOrder(orderDto)).then((result) => {
-      if (result.payload) {
-        let orderName = result.payload.orderName;
-        navigate("/payment", { state: orderName });
-      }
-    });
+    dispatch(upsertOrder(orderDto))
+      .then((result) => {
+        if (result.payload) {
+          handleModal(null, null);
+          document.getElementById("btnCloseModal").click();
+
+          let orderId = result.payload.id;
+          navigate("/payment?orderId=" + orderId);
+        }
+      })
+      .catch((error) => {
+        console.error("Error during dispatch:", error);
+        window.alert("Something happended.Please retry.");
+        throw error;
+      });
   };
 
   const calculateTotal = () => {
@@ -99,18 +116,24 @@ const Menu = () => {
   }, [selectedFood, quantity, addOn]);
 
   React.useEffect(() => {
-    dispatch(getMenuWithPreferences()).then((result) => {
-      if (result.payload) {
-        setMenu(result.payload);
-      }
-    });
+    dispatch(getMenuWithPreferences())
+      .then((result) => {
+        if (result.payload) {
+          setMenu(result.payload);
+        }
+      })
+      .catch((error) => {
+        console.error("Error during dispatch:", error);
+        window.alert("Something happended.Please retry.");
+        throw error;
+      });
   }, []);
 
   return (
     <div className="container text-center">
       <Navbar title={"Menu"}></Navbar>
       {error ? (
-        <div>
+        <div className="container-fluid text-center menu">
           <div className="alert alert-danger mt-1">{error}</div>
         </div>
       ) : loading ? (
@@ -122,7 +145,7 @@ const Menu = () => {
           <div className="container-fluid text-center menu">
             {menu &&
               menu.map((stall) => (
-                <>
+                <div key={JSON.stringify(stall)} className="mt-1">
                   <div className="row row-cols-2">
                     <div className="col">
                       <h2>{stall.stallName}</h2>
@@ -136,7 +159,7 @@ const Menu = () => {
                         className="salad-card"
                         data-bs-toggle="modal"
                         data-bs-target="#foodModal"
-                        onClick={() => handleModal(food)}
+                        onClick={() => handleModal(food, stall.stallId)}
                       >
                         <img src={food.image} alt={food.foodName} />
                         <div className="salad-detail-card">
@@ -146,9 +169,15 @@ const Menu = () => {
                       </div>
                     ))}
                   </div>
-                </>
+                </div>
               ))}
           </div>
+
+          <nav className="fixed-bottom p-2">
+            <button type="button" className="btn btn-danger w-100 btn-red">
+              {"Order History"}
+            </button>
+          </nav>
 
           <div id="foodModal" className="modal">
             <div className="modal-dialog modal-fullscreen">
@@ -162,7 +191,7 @@ const Menu = () => {
                       data-bs-dismiss="modal"
                       aria-label="Close"
                       onClick={() => {
-                        handleModal(null);
+                        handleModal(null, null);
                       }}
                     ></button>
                   </div>
@@ -202,7 +231,10 @@ const Menu = () => {
                     <p className="text-end">Price: ${selectedFood.price}</p>
 
                     {selectedFood.foodCustomization.map((x) => (
-                      <div className="form-check text-end">
+                      <div
+                        key={JSON.stringify(x)}
+                        className="form-check text-end"
+                      >
                         <input
                           className="form-check-input"
                           type="checkbox"
@@ -237,11 +269,17 @@ const Menu = () => {
                     <button
                       type="button"
                       className="btn btn-danger w-100"
-                      data-bs-dismiss="modal"
                       onClick={() => handlePayment()}
                     >
                       {"Pay $" + total}
                     </button>
+                    <button
+                      id="btnCloseModal"
+                      type="button"
+                      className="d-none"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
                   </div>
                 </div>
               )}
@@ -258,6 +296,7 @@ const numberStars = (rating) => {
   for (let i = 0; i < rating; i++) {
     stars.push(
       <svg
+        key={i}
         xmlns="http://www.w3.org/2000/svg"
         width="16"
         height="16"
