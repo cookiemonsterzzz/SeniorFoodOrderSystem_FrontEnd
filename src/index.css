@@ -201,3 +201,15 @@ p {
   cursor: pointer;
   text-shadow: 0 0 10px rgba(169, 169, 169, 0.8); /* You can adjust the shadow effect */
 }
+
+.enquiry-button {
+  position: fixed;
+  bottom: 90px;
+  right: 16px;
+  padding: 10px 20px;
+  background-color: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

@@ -10,6 +10,7 @@ import Menu from "./pages/menu/Menu";
 import Payment from "./pages/payment/Payment";
 import Order from "./pages/order/Order";
 import OrderDetail from "./pages/order/OrderDetail";
+import Enquiry from "./pages/enquiry/Enquiry";
 
 function getUser() {
   let token = localStorage.getItem("token");
@@ -55,6 +56,7 @@ const App = () => {
               <Route path="/payment" element={<Payment />} />
               <Route path="/order" element={<Order />} />
               <Route path="/order/detail" element={<OrderDetail />}></Route>
+              <Route path="/enquiry" element={<Enquiry />} />
             </>
           ) : (
             <>
