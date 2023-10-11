@@ -111,11 +111,19 @@ const Payment = ({ orderId }) => {
                       </button>
                     </h4>
                     <div id="panel" className="accordion-collapse collapse">
-                      <div className="accordion-body text-start">
-                        <p>{orderDetail.foodName}</p>
-                        <p>Quantity : {orderDetail.quantity}</p>
-                        <p>Price : {orderDetail.foodPrice}</p>
-                        <p>Add On : {orderDetail.foodCustomization}</p>
+                      <div className="accordion-body d-flex flex-column justify-content-start">
+                        <span>
+                          <strong>{orderDetail.foodName}</strong>
+                        </span>
+                        <span className="text-start">
+                          Quantity : {orderDetail.quantity}
+                        </span>
+                        <span className="text-start">
+                          Price : {orderDetail.foodPrice}
+                        </span>
+                        <span className="text-start">
+                          Add On : {orderDetail.foodCustomization}
+                        </span>
                       </div>
                     </div>
                   </div>

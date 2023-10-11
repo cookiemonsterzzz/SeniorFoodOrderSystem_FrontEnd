@@ -176,3 +176,28 @@ p {
 .badge {
   font-size: 16px !important;
 }
+
+.accordion-body {
+  font-size: 20px !important;
+}
+
+/* CSS for filled star */
+.star-filled {
+  color: gold; /* You can change the color to your preference */
+}
+
+/* CSS for empty star */
+.star-empty {
+  color: gray; /* You can change the color to your preference */
+}
+
+/* Optional: Add hover effect */
+.star-filled:hover {
+  cursor: pointer;
+  text-shadow: 0 0 10px rgba(255, 255, 0, 0.8); /* You can adjust the shadow effect */
+}
+
+.star-empty:hover {
+  cursor: pointer;
+  text-shadow: 0 0 10px rgba(169, 169, 169, 0.8); /* You can adjust the shadow effect */
+}

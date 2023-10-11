@@ -11,7 +11,22 @@ const Order = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const statusClasses = {
+    Unpaid: "bg-danger",
+    "In Progress": "bg-warning",
+    Done: "bg-success",
+    default: "bg-primary",
+  };
+
   const { loading, error } = useSelector((state) => state.orders);
+
+  const handleOrder = (orderStatus, orderId) => {
+    if (orderStatus === "Unpaid") {
+      navigate("/payment?orderId=" + orderId);
+    } else {
+      navigate("/order/detail?orderId=" + orderId);
+    }
+  };
 
   React.useEffect(() => {
     dispatch(getOrders())
@@ -46,7 +61,9 @@ const Order = () => {
                 {orders.map((x) => (
                   <li
                     key={x.id}
-                    onClick={() => {}}
+                    onClick={() => {
+                      handleOrder(x.orderStatus, x.id);
+                    }}
                     className="list-group-item d-flex justify-content-between align-items-start align-items-center"
                   >
                     <div className="ms-2 me-auto">
@@ -55,13 +72,8 @@ const Order = () => {
                     <span
                       className={
                         "badge " +
-                        (x.orderStatus === "Unpaid"
-                          ? "bg-danger"
-                          : x.orderStatus === "In Progress"
-                          ? "bg-warning"
-                          : x.orderStatus === "Done"
-                          ? "bg-success"
-                          : "bg-primary") +
+                        (statusClasses[x.orderStatus] ||
+                          statusClasses.default) +
                         " bg-xs rounded-pill"
                       }
                     >

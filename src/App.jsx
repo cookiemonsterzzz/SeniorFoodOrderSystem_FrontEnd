@@ -9,6 +9,7 @@ import Home from "./pages/home/Home";
 import Menu from "./pages/menu/Menu";
 import Payment from "./pages/payment/Payment";
 import Order from "./pages/order/Order";
+import OrderDetail from "./pages/order/OrderDetail";
 
 function getUser() {
   let token = localStorage.getItem("token");
@@ -53,6 +54,7 @@ const App = () => {
               <Route path="/menu" element={<Menu />} />
               <Route path="/payment" element={<Payment />} />
               <Route path="/order" element={<Order />} />
+              <Route path="/order/detail" element={<OrderDetail />}></Route>
             </>
           ) : (
             <>

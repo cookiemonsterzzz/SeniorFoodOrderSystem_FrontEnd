@@ -5,6 +5,7 @@ import orderReducer from "./order/OrderSlice";
 import ordersReducer from "./order/OrdersSlice";
 import orderUpsertReducer from "./order/OrderUpsertSlice";
 import paymentUpsertReducer from "./payment/PaymentSlice";
+import ratingReducer from "./rating/RatingSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     orders: ordersReducer,
     orderUpsert: orderUpsertReducer,
     paymentUpsert: paymentUpsertReducer,
+    rating: ratingReducer,
   },
 });
 
