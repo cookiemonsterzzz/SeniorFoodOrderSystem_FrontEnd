@@ -7,7 +7,6 @@ import { getOrders } from "../../redux/order/OrdersSlice";
 
 const Order = () => {
   const [orders, setOrders] = useState(null);
-  const [orderDetail, setOrderDetail] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
