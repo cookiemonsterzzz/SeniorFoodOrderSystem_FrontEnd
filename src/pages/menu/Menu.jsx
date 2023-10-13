@@ -4,10 +4,12 @@ import { getMenuWithPreferences } from "../../redux/menu/MenuSlice";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../component/Navbar";
+import { upsertOrder } from "../../redux/order/OrderUpsertSlice";
 
 const Menu = () => {
   const [menu, setMenu] = useState(null);
   const [selectedFood, setSelectedFood] = useState(null);
+  const [selectedStallId, setSelectedStallId] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [addOn, setAddOn] = useState([]);
   const [total, setTotal] = useState(0);
@@ -16,8 +18,9 @@ const Menu = () => {
 
   const { loading, error } = useSelector((state) => state.menu);
 
-  const handleModal = (food) => {
+  const handleModal = (food, stallId) => {
     setSelectedFood(food);
+    setSelectedStallId(stallId);
     if (food) {
       setTotal(food.price);
       setQuantity(1);
@@ -33,13 +36,15 @@ const Menu = () => {
     }
   };
 
-  const handleCustomization = (checked, addOnAmount) => {
+  const handleCustomization = (checked, addOnItem, addOnAmount) => {
     addOnAmount = parseFloat(addOnAmount.toFixed(2));
     if (checked) {
-      setAddOn([...addOn, addOnAmount]);
+      setAddOn([...addOn, { key: addOnItem, value: addOnAmount }]);
     } else {
       var tempArr = [...addOn];
-      const index = tempArr.findIndex((item) => item === addOnAmount);
+      const index = tempArr.findIndex(
+        (item) => item.key === addOnItem && item.value === addOnAmount
+      );
       if (index !== -1) {
         tempArr.splice(index, 1);
         setAddOn(tempArr);
@@ -59,21 +64,57 @@ const Menu = () => {
     }
   };
 
-  const handlePayment = (total) => {
+  const handlePayment = () => {
     //create order
-    var orderID = "99912";
-    navigate("/payment", { state: orderID });
+    if (!window.confirm("Confirm to order?")) {
+      return;
+    }
+
+    let orderDto = {
+      FoodName: selectedFood.foodName,
+      FoodCustomization: addOn
+        .map((item) => `${item.key}: ${item.value}`)
+        .join(", "),
+      FoodPrice: selectedFood.price,
+      Quantity: quantity,
+      Amount: parseFloat(total),
+      StallId: selectedStallId,
+    };
+
+    dispatch(upsertOrder(orderDto))
+      .then((result) => {
+        if (result.payload) {
+          handleModal(null, null);
+          document.getElementById("btnCloseModal").click();
+
+          let orderId = result.payload.id;
+          navigate("/payment?orderId=" + orderId);
+        }
+      })
+      .catch((error) => {
+        console.error("Error during dispatch:", error);
+        window.alert("Something happended.Please retry.");
+        throw error;
+      });
   };
 
   const calculateTotal = () => {
     const basePrice = selectedFood.price;
     const addonPrice = addOn
       ? addOn.reduce((acc, addon) => {
-          return acc + addon;
+          return acc + addon.value;
         }, 0)
       : 0;
     var newTotal = ((basePrice + addonPrice) * quantity).toFixed(2);
     setTotal(newTotal);
+  };
+
+  const goToOrderHistory = () => {
+    navigate("/order");
+  };
+
+  const goToEnquiry = () => {
+    navigate("/enquiry");
   };
 
   React.useEffect(() => {
@@ -83,18 +124,24 @@ const Menu = () => {
   }, [selectedFood, quantity, addOn]);
 
   React.useEffect(() => {
-    dispatch(getMenuWithPreferences()).then((result) => {
-      if (result.payload) {
-        setMenu(result.payload);
-      }
-    });
+    dispatch(getMenuWithPreferences())
+      .then((result) => {
+        if (result.payload) {
+          setMenu(result.payload);
+        }
+      })
+      .catch((error) => {
+        console.error("Error during dispatch:", error);
+        window.alert("Something happended.Please retry.");
+        throw error;
+      });
   }, []);
 
   return (
     <div className="container text-center">
       <Navbar title={"Menu"}></Navbar>
       {error ? (
-        <div>
+        <div className="container-fluid text-center menu">
           <div className="alert alert-danger mt-1">{error}</div>
         </div>
       ) : loading ? (
@@ -106,7 +153,7 @@ const Menu = () => {
           <div className="container-fluid text-center menu">
             {menu &&
               menu.map((stall) => (
-                <>
+                <div key={JSON.stringify(stall)} className="mt-1">
                   <div className="row row-cols-2">
                     <div className="col">
                       <h2>{stall.stallName}</h2>
@@ -120,7 +167,7 @@ const Menu = () => {
                         className="salad-card"
                         data-bs-toggle="modal"
                         data-bs-target="#foodModal"
-                        onClick={() => handleModal(food)}
+                        onClick={() => handleModal(food, stall.stallId)}
                       >
                         <img src={food.image} alt={food.foodName} />
                         <div className="salad-detail-card">
@@ -130,9 +177,34 @@ const Menu = () => {
                       </div>
                     ))}
                   </div>
-                </>
+                </div>
               ))}
           </div>
+
+          <button className="enquiry-button" onClick={() => goToEnquiry()}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              class="bi bi-headset"
+              viewBox="0 0 16 16"
+            >
+              <path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5z" />
+            </svg>
+          </button>
+
+          <nav className="fixed-bottom p-2">
+            <button
+              type="button"
+              className="btn btn-danger w-100 btn-red"
+              onClick={() => {
+                goToOrderHistory();
+              }}
+            >
+              {"Order History"}
+            </button>
+          </nav>
 
           <div id="foodModal" className="modal">
             <div className="modal-dialog modal-fullscreen">
@@ -146,7 +218,7 @@ const Menu = () => {
                       data-bs-dismiss="modal"
                       aria-label="Close"
                       onClick={() => {
-                        handleModal(null);
+                        handleModal(null, null);
                       }}
                     ></button>
                   </div>
@@ -186,14 +258,21 @@ const Menu = () => {
                     <p className="text-end">Price: ${selectedFood.price}</p>
 
                     {selectedFood.foodCustomization.map((x) => (
-                      <div className="form-check text-end">
+                      <div
+                        key={JSON.stringify(x)}
+                        className="form-check text-end"
+                      >
                         <input
                           className="form-check-input"
                           type="checkbox"
                           value=""
                           id={"check" + x.name}
                           onChange={(e) =>
-                            handleCustomization(e.target.checked, x.price)
+                            handleCustomization(
+                              e.target.checked,
+                              x.name,
+                              x.price
+                            )
                           }
                         />
                         <label
@@ -217,11 +296,17 @@ const Menu = () => {
                     <button
                       type="button"
                       className="btn btn-danger w-100"
-                      data-bs-dismiss="modal"
-                      onClick={() => handlePayment(total)}
+                      onClick={() => handlePayment()}
                     >
                       {"Pay $" + total}
                     </button>
+                    <button
+                      id="btnCloseModal"
+                      type="button"
+                      className="d-none"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
                   </div>
                 </div>
               )}
@@ -238,6 +323,7 @@ const numberStars = (rating) => {
   for (let i = 0; i < rating; i++) {
     stars.push(
       <svg
+        key={i}
         xmlns="http://www.w3.org/2000/svg"
         width="16"
         height="16"

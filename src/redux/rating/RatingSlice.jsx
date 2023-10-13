@@ -2,12 +2,13 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { apiHeaders, orderHostName } from "../../config";
 
-export const getOrderByID = createAsyncThunk(
-  "order/getOrderByID",
-  async (orderId) => {
+export const upsertRating = createAsyncThunk(
+  "rating/upsertRating",
+  async (ratingDto) => {
     let token = "Bearer " + localStorage.getItem("token");
-    const request = await axios.get(
-      `${orderHostName}api/Order/getOrderById?orderId=${orderId}`,
+    const request = await axios.post(
+      `${orderHostName}api/StallRating`,
+      ratingDto,
       {
         headers: { ...apiHeaders, Authorization: token },
       }
@@ -17,31 +18,31 @@ export const getOrderByID = createAsyncThunk(
   }
 );
 
-const orderSlice = createSlice({
-  name: "order",
+const ratingUpsertSlice = createSlice({
+  name: "ratingUpsert",
   initialState: {
     loading: false,
-    order: null,
+    rating: null,
     error: null,
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getOrderByID.pending, (state) => {
+      .addCase(upsertRating.pending, (state) => {
         state.loading = true;
-        state.order = null;
+        state.rating = null;
         state.error = null;
       })
-      .addCase(getOrderByID.fulfilled, (state, action) => {
+      .addCase(upsertRating.fulfilled, (state, action) => {
         state.loading = false;
-        state.order = action.payload;
+        state.rating = action.payload;
         state.error = null;
       })
-      .addCase(getOrderByID.rejected, (state, action) => {
+      .addCase(upsertRating.rejected, (state, action) => {
         state.loading = false;
-        state.order = null;
+        state.rating = null;
         state.error = "Couldn't proceed. Please Retry.";
       });
   },
 });
 
-export default orderSlice.reducer;
+export default ratingUpsertSlice.reducer;

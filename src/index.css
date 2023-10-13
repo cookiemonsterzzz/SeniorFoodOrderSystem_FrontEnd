@@ -136,19 +136,80 @@ p {
   --bs-gradient: none;
 }
 
-.btn-make-payment {
+.btn-red {
   --bs-btn-color: #fff;
   --bs-btn-bg: var(--red) !important;
   --bs-btn-border-color: var(--red) !important;
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #bb2d3b;
-  --bs-btn-hover-border-color: #b02a37;
+  --bs-btn-hover-bg: var(--red);
+  --bs-btn-hover-border-color: var(--red);
   --bs-btn-focus-shadow-rgb: 225, 83, 97;
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #b02a37;
-  --bs-btn-active-border-color: #a52834;
+  --bs-btn-active-bg: var(--red);
+  --bs-btn-active-border-color: var(--red);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: var(--red) !important;
   --bs-btn-disabled-border-color: var(--red) !important;
+}
+
+.accordion-item {
+  color: var(--bs-accordion-color);
+  background-color: var(--pearl) !important;
+  border: var(--bs-accordion-border-width) solid var(--red) !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: var(--pearl) !important;
+  box-shadow: #dee2e6 !important;
+}
+
+.accordion-button {
+  background-color: var(--pearl) !important;
+  border-radius: 10px !important;
+}
+
+#btnBackToMenu {
+  color: var(--red);
+}
+
+.badge {
+  font-size: 16px !important;
+}
+
+.accordion-body {
+  font-size: 20px !important;
+}
+
+/* CSS for filled star */
+.star-filled {
+  color: gold; /* You can change the color to your preference */
+}
+
+/* CSS for empty star */
+.star-empty {
+  color: gray; /* You can change the color to your preference */
+}
+
+/* Optional: Add hover effect */
+.star-filled:hover {
+  cursor: pointer;
+  text-shadow: 0 0 10px rgba(255, 255, 0, 0.8); /* You can adjust the shadow effect */
+}
+
+.star-empty:hover {
+  cursor: pointer;
+  text-shadow: 0 0 10px rgba(169, 169, 169, 0.8); /* You can adjust the shadow effect */
+}
+
+.enquiry-button {
+  position: fixed;
+  bottom: 90px;
+  right: 16px;
+  padding: 10px 20px;
+  background-color: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
