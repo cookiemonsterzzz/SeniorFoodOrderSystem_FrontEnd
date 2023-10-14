@@ -4,6 +4,14 @@ import { useNavigate } from "react-router-dom";
 const Navbar = ({ title }) => {
   const navigate = useNavigate();
 
+  const handleLogOut = () => {
+    if (!window.confirm("Confirm to log out?")) {
+      return;
+    }
+
+    window.dispatchEvent(new Event("logOut"));
+  };
+
   return (
     <nav className="navbar fixed-top">
       <div className="container-fluid">
@@ -15,7 +23,11 @@ const Navbar = ({ title }) => {
         >
           {title}
         </div>
-        <button className="btn btn-sm btn-outline-light" type="submit">
+        <button
+          className="btn btn-sm btn-outline-light"
+          type="submit"
+          onClick={() => handleLogOut()}
+        >
           Log Out
         </button>
       </div>

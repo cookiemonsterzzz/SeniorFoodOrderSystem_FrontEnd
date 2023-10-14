@@ -22,7 +22,6 @@ function Enquiry() {
 
     dispatch(addEnquiry(dto))
       .then((result) => {
-        console.log(result);
         if (result.payload) {
           showEnquirySuccess();
         }
