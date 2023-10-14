@@ -281,14 +281,6 @@ const Menu = () => {
                         </label>
                       </div>
                     ))}
-                    <div className="form-floating">
-                      <textarea
-                        className="form-control"
-                        placeholder="Remarks"
-                        id="floatingTextarea"
-                      ></textarea>
-                      <label htmlFor="floatingTextarea">Remarks</label>
-                    </div>
                   </div>
                   <div className="modal-footer">
                     <button
