@@ -11,6 +11,7 @@ import Payment from "./pages/payment/Payment";
 import Order from "./pages/order/Order";
 import OrderDetail from "./pages/order/OrderDetail";
 import Enquiry from "./pages/enquiry/Enquiry";
+import NotSupported from "./pages/common/NotSupported";
 
 function getUser() {
   let token = localStorage.getItem("token");
@@ -30,20 +31,46 @@ function validateTokenExpiration(exp) {
   return Date.now() >= exp * 1000;
 }
 
+function isMobileDevice() {
+  const MOBILE_WIDTH_THRESHOLD = 768;
+
+  return window.innerWidth < MOBILE_WIDTH_THRESHOLD;
+}
+
 const App = () => {
   const [user, setUser] = useState(getUser());
+  const [isMobile, setIsMobile] = useState(false);
 
   const retriveCurrentUser = () => {
     setUser(getUser());
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
   React.useEffect(() => {
     window.addEventListener("userToken", retriveCurrentUser);
+    window.addEventListener("logOut", handleLogout);
+
+    setIsMobile(isMobileDevice());
 
     return () => {
       window.removeEventListener("userToken", retriveCurrentUser);
+      window.removeEventListener("logOut", handleLogout);
     };
   }, []);
+
+  if (!isMobile) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="*" element={<NotSupported />} />
+        </Routes>
+      </Router>
+    );
+  }
 
   return (
     <div className="wrapper center">

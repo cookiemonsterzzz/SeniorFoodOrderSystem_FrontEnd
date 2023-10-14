@@ -35,7 +35,6 @@ const Order = () => {
         }
       })
       .catch((error) => {
-        console.error("Error during dispatch:", error);
         window.alert("Something happended.Please retry.");
         throw error;
       });
