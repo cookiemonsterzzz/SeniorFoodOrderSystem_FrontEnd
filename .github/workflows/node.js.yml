@@ -16,7 +16,7 @@ jobs:
     - run: npm install
     - run: CI=false npm run build
     - name: ssh deploy on aws ec2
-      uses: easingthemes/ssh-deploy@v2.1.4
+      uses: easingthemes/ssh-deploy@main
       env:
         SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
         REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
