@@ -53,7 +53,7 @@ const Home = () => {
           />
         </div>
         <button type="submit" className="btn btn-danger btn-lg mt-2 w-100">
-          {loading ? "Loading..." : "Login"}
+          {loading ? "Loading..." : "Submit"}
         </button>
       </form>
       {error && (
